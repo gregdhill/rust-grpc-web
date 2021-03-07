@@ -9,6 +9,7 @@ use hyper::{
     },
     Body, Request as HttpRequest, Response as HttpResponse,
 };
+use std::convert::{TryFrom, TryInto};
 use tonic::codegen::StdError;
 use tonic::transport::Channel;
 use tonic::transport::Endpoint;
@@ -98,13 +99,12 @@ impl Proxy {
         log::info!("Forwarding http request: {:?}", http_request);
         let grpc_request: GrpcRequest = GrpcWebRequest::from_http_request(http_request)
             .await?
-            .into();
+            .try_into()?;
 
-        // TODO: support client streaming and bi-directional streaming
         match self.metadata.get_query_type(path.clone())? {
             ConnectionType::Unary => {
                 let grpc_response = self.client.unary(grpc_request, path, codec).await?;
-                let grpc_web_response = GrpcWebResponse::from(grpc_response);
+                let grpc_web_response = GrpcWebResponse::try_from(grpc_response)?;
 
                 let mut http_response: HttpResponse<Body> = grpc_web_response.into();
                 self.config.add_default_headers(&mut http_response);
@@ -126,13 +126,17 @@ impl Proxy {
 
                 *http_response.body_mut() =
                     Body::wrap_stream(streaming.map::<Result<Vec<u8>, Status>, _>(move |result| {
-                        let grpc_web_response = GrpcWebResponse::from((result?, metadata.clone()));
+                        let grpc_web_response =
+                            GrpcWebResponse::try_from((result?, metadata.clone()))
+                                .map_err(|err| Status::internal(err.to_string()))?;
                         Ok(grpc_web_response.into())
                     }));
 
                 Ok(http_response)
             }
-            _ => Err(Error::InvalidRequest),
+            // NOTE: client-side and bi-directional streaming are not
+            // currently supported by the gRPC-Web protocol
+            _ => Err(Error::Unsupported),
         }
     }
 

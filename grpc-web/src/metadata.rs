@@ -87,7 +87,15 @@ impl Metadata {
 
     pub fn get_query_type(&self, path: PathAndQuery) -> Result<ConnectionType, Error> {
         let parts = path.path().split("/").collect::<Vec<&str>>();
-        Ok(self.0.get(parts[1]).unwrap().get(parts[2]).unwrap().clone())
+        let parts = parts.get(1..3).ok_or(Error::InvalidQuery)?;
+        let connection_type = self
+            .0
+            .get(parts[0])
+            .ok_or(Error::UnknownService)?
+            .get(parts[1])
+            .ok_or(Error::UnknownMethod)?
+            .clone();
+        Ok(connection_type)
     }
 }
 
@@ -144,5 +152,57 @@ async fn get_methods(
         Ok(service.method.clone())
     } else {
         Ok(vec![])
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    macro_rules! assert_err {
+        ($result:expr, $err:pat) => {{
+            match $result {
+                Err($err) => (),
+                Ok(v) => panic!("assertion failed: Ok({:?})", v),
+                _ => panic!("expected: Err($err)"),
+            }
+        }};
+    }
+
+    macro_rules! assert_ok {
+        ( $x:expr $(,)? ) => {
+            let is = $x;
+            match is {
+                Ok(_) => (),
+                _ => assert!(false, "Expected Ok(_). Got {:#?}", is),
+            }
+        };
+        ( $x:expr, $y:expr $(,)? ) => {
+            assert_eq!($x, Ok($y));
+        };
+    }
+
+    #[tokio::test]
+    async fn should_get_query_type() -> Result<(), Error> {
+        let mut metadata = HashMap::new();
+        metadata.insert(
+            "service".to_string(),
+            vec![("method".to_string(), ConnectionType::Unary)]
+                .into_iter()
+                .collect(),
+        );
+
+        let metadata = Metadata(metadata);
+        assert_ok!(metadata.get_query_type(PathAndQuery::from_static("/service/method")));
+        assert_err!(
+            metadata.get_query_type(PathAndQuery::from_static("/unknown/method")),
+            Error::UnknownService
+        );
+        assert_err!(
+            metadata.get_query_type(PathAndQuery::from_static("/service/unknown")),
+            Error::UnknownMethod
+        );
+
+        Ok(())
     }
 }

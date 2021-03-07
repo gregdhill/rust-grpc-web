@@ -1,6 +1,7 @@
 use base64::DecodeError as Base64DecodeError;
 use hyper::Error as HyperError;
 use prost::DecodeError as ProstDecodeError;
+use std::num::TryFromIntError;
 use thiserror::Error;
 use tonic::transport::Error as TransportError;
 use tonic::Status;
@@ -13,6 +14,14 @@ pub enum Error {
     NoResponse,
     #[error("Invalid request")]
     InvalidRequest,
+    #[error("Invalid query")]
+    InvalidQuery,
+    #[error("Unsupported protocol")]
+    Unsupported,
+    #[error("Unknown service")]
+    UnknownService,
+    #[error("Unknown method")]
+    UnknownMethod,
 
     #[error("HyperError: {0}")]
     HyperError(#[from] HyperError),
@@ -24,4 +33,6 @@ pub enum Error {
     ProstDecodeError(#[from] ProstDecodeError),
     #[error("Status: {0}")]
     Status(#[from] Status),
+    #[error("TryFromIntError: {0}")]
+    TryFromIntError(#[from] TryFromIntError),
 }

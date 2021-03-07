@@ -4,19 +4,16 @@ Proxy service for gRPC-Web, written in Rust.
 
 **[Specification](https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md)**
 
+> Note: client-side & bi-directional streaming is not currently supported in the specification.
+
 ## Structure
 
 - **grpc-web**: logic & types
 - **grpc-web-proxy**: hyper server
 
-## Features
+## Future
 
-- [x] Unary Support
-- [x] Server Streaming Support
-- [ ] Client Streaming Support
-- [ ] Bi-Directional Streaming Support
-
-In a future release I aim to support an embedded service for Tonic just as `grpcweb` for Go wraps its handlers.
+- Embedded service support for Tonic - think `grpcweb` handler wrapping in Go.
 
 ## Tutorial
 
