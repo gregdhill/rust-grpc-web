@@ -1,0 +1,19 @@
+[package]
+name = "rust-grpc-web-proxy"
+version = "0.1.0"
+authors = ["Gregory Hill <gregorydhill@outlook.com>"]
+edition = "2018"
+
+[[bin]]
+name = "grpc-web-proxy"
+path = "src/main.rs"
+
+[dependencies]
+tonic = { git = "https://github.com/hyperium/tonic", rev = "61555ff" }
+grpc-web = { path = "../grpc-web", package = "rust-grpc-web" }
+hyper = "0.14.4"
+futures = "0.3"
+tokio = { version = "1.0", features = ["rt-multi-thread", "time", "fs", "macros", "net"] }
+clap = "3.0.0-beta.2"
+env_logger = "0.7.1"
+log = "0.4.0"

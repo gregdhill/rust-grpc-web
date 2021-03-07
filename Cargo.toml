@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "grpc-web",
+    "grpc-web-proxy",
+
+    "examples/helloworld",
+]

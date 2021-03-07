@@ -1,0 +1,24 @@
+[package]
+name = "helloworld"
+version = "0.1.0"
+authors = ["Gregory Hill <gregorydhill@outlook.com>"]
+edition = "2018"
+
+[[bin]]
+name = "helloworld-server"
+path = "src/server.rs"
+
+[[bin]]
+name = "helloworld-client"
+path = "src/client.rs"
+
+[dependencies]
+tonic = { git = "https://github.com/hyperium/tonic", rev = "61555ff" }
+prost = "0.7"
+tokio = { version = "1.0", features = ["rt-multi-thread", "time", "fs", "macros", "net"] }
+tokio-stream = { version =  "0.1", features = ["net"] }
+tonic-reflection = { git = "https://github.com/hyperium/tonic", rev = "61555ff" }
+futures = { version = "0.3", default-features = false, features = ["alloc"] }
+
+[build-dependencies]
+tonic-build = { git = "https://github.com/hyperium/tonic", rev = "61555ff" }

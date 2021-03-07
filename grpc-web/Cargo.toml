@@ -1,0 +1,24 @@
+[package]
+name = "rust-grpc-web"
+version = "0.1.0"
+authors = ["Gregory Hill <gregorydhill@outlook.com>"]
+edition = "2018"
+
+[dependencies]
+tonic = { git = "https://github.com/hyperium/tonic", rev = "61555ff" }
+tonic-reflection = { git = "https://github.com/hyperium/tonic", rev = "61555ff" }
+prost = "0.7"
+tokio = { version = "1.0", features = ["rt-multi-thread", "time", "fs", "macros", "net"] }
+hyper = "0.14.4"
+base64 = "0.13.0"
+bytes = "1.0"
+byteorder = "1"
+futures = { version = "0.3", default-features = false, features = ["alloc"] }
+tokio-stream = { version =  "0.1", features = ["net"] }
+prost-types = "0.7"
+thiserror = "1.0"
+log = "0.4.0"
+env_logger = "0.7.1"
+
+[build-dependencies]
+tonic-build = { git = "https://github.com/hyperium/tonic", rev = "61555ff" }
