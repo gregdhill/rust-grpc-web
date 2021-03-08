@@ -1,19 +1,17 @@
-# Rust gRPC Web (WIP)
+# Rust gRPC Web
 
-Proxy service for gRPC-Web, written in Rust.
+Standalone proxy service for gRPC-Web, written in Rust.
 
 **[Specification](https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md)**
 
 > Note: client-side & bi-directional streaming is not currently supported in the specification.
 
+For efforts related to Tonic integration, see [this PR](https://github.com/hyperium/tonic/pull/455).
+
 ## Structure
 
 - **grpc-web**: logic & types
 - **grpc-web-proxy**: hyper server
-
-## Future
-
-- Embedded service support for Tonic - think `grpcweb` handler wrapping in Go.
 
 ## Tutorial
 
